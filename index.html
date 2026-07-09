@@ -27,6 +27,27 @@
       align-items: flex-start;
     }
 
+    .dsit-brand {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .dsit-brand svg {
+      width: 42px;
+      height: auto;
+      flex-shrink: 0;
+    }
+
+    .dsit-brand__text {
+      font-size: 18px;
+      line-height: 1.05;
+      font-weight: 500;
+    }
+
     .slide h1,
     .slide h2,
     .slide h3,
@@ -69,6 +90,17 @@
   <div id="host"></div>
 
   <script>
+    const dsitBrand = `
+      <div class="dsit-brand">
+        <svg viewBox="0 0 48 68" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path fill="currentColor" d="M24 1 L40 8 L46 28 L38 49 L24 67 L10 49 L2 28 L8 8 Z"/>
+        </svg>
+        <div class="dsit-brand__text">
+          Department for Science,<br>
+          Innovation &amp; Technology
+        </div>
+      </div>`;
+
     fetch('content/slides.md')
       .then(r => r.text())
       .then(md => {
@@ -82,7 +114,7 @@
         blocks.forEach(block => {
           const slide = document.createElement('section');
           slide.className = 'slide';
-          slide.innerHTML = marked.parse(block);
+          slide.innerHTML = dsitBrand + marked.parse(block);
           host.appendChild(slide);
         });
 
