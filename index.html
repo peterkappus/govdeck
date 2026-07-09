@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>GovDeck</title>
+<script src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'></script>
+<style>
+:root{--blue:#1d70b8;--black:#0b0c0c;--surface:#f4f8fb}*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;font-family:Helvetica,Arial,sans-serif;background:#fff;color:var(--black)}
+.slide{display:none;position:absolute;inset:0;padding:72px 96px}.slide.active{display:flex}
+.layout-title,.layout-content,.layout-stats,.layout-quote{flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.layout-section{flex-direction:column;justify-content:center;align-items:flex-start;text-align:left;padding-left:12vw}
+h1{font-size:clamp(4rem,10vw,12rem);line-height:.9;font-weight:900;margin:.15em 0}h2{font-size:clamp(2rem,5vw,5rem);color:var(--blue)}h3{font-size:clamp(1.5rem,3vw,2.5rem)}p{font-size:clamp(1.2rem,2vw,2rem);line-height:1.5}
+.layout-stats h1{font-size:clamp(10rem,22vw,22rem);color:var(--blue)}.layout-quote blockquote{font-size:clamp(3rem,8vw,8rem);font-weight:800;line-height:1.05}
+.gem-c-organisation-logo{position:absolute;top:24px;left:24px;display:flex;gap:14px}.crest{width:40px}.name{font-size:18px;line-height:1.05}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:3rem;width:100%}.card{background:var(--surface);padding:2rem;border-radius:16px}.image-layout{display:grid;grid-template-columns:1fr 1fr;gap:2rem;width:100%}.image-layout img{width:100%;border-radius:16px}
+.fragment{opacity:.15}.fragment.visible{opacity:1}#bar{position:fixed;left:0;bottom:0;height:5px;background:var(--blue)}#num{position:fixed;right:12px;bottom:10px}
+</style></head><body>
+<script id='slides' type='text/plain'>
+===slide===
+title: demo
+===slide===
+layout: section
+logo: dsit
+# GOVDECK
+## Typography First
+### GOV.UK Inspired
+Large comfortable typography designed for keynote presentations.
+</script>
+<div id='host'></div><div id='bar'></div><div id='num'></div>
+<script>
+const crestSvg=`<svg viewBox='0 0 64 90' xmlns='http://www.w3.org/2000/svg'><path fill='currentColor' d='M32 2 50 10 58 34 49 62 32 88 15 62 6 34 14 10z'/></svg>`;
+function logo(){return `<div class='gem-c-organisation-logo'><div class='crest'>${crestSvg}</div><div class='name'>Department for Science,<br>Innovation & Technology</div></div>`}
+function parse(){const r=document.getElementById('slides').textContent;return r.split(/^===slide===$/gm).map(x=>x.trim()).filter(Boolean).flatMap(b=>{const m={},a=[];for(const l of b.split('\n')){const mm=l.match(/^([A-Za-z0-9_-]+):\s*(.+)$/);if(mm&&!l.startsWith('#'))m[mm[1]]=mm[2];else a.push(l)}if(m.title)return[];return[{m,md:a.join('\n')}];});}
+const slides=parse(),host=document.getElementById('host');slides.forEach(s=>{const e=document.createElement('section');e.className='slide layout-'+(s.m.layout||'content');e.innerHTML=(s.m.logo==='dsit'?logo():'')+marked.parse(s.md);host.appendChild(e)});const els=[...document.querySelectorAll('.slide')];let cur=0;function prep(){document.querySelectorAll('.active li').forEach(li=>li.classList.add('fragment'))}function show(i){cur=Math.max(0,Math.min(i,els.length-1));els.forEach((e,n)=>e.classList.toggle('active',n===cur));prep();bar.style.width=((cur+1)/els.length*100)+'%';num.textContent=(cur+1)+'/'+els.length}function next(){const f=document.querySelector('.active .fragment:not(.visible)');if(f){f.classList.add('visible');return;}show(cur+1)}function prev(){const v=[...document.querySelectorAll('.active .fragment.visible')];if(v.length){v.at(-1).classList.remove('visible');return;}show(cur-1)}document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')next();if(e.key==='ArrowLeft')prev();if(e.key.toLowerCase()==='f'){!document.fullscreenElement?document.documentElement.requestFullscreen():document.exitFullscreen();}});show(0);
+</script></body></html>
