@@ -1,1 +1,106 @@
-<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>GovDeck</title><script src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'></script><style>body{margin:0;font-family:Helvetica,Arial,sans-serif;background:#fff;color:#0b0c0c}.slide{display:none;position:absolute;inset:0;padding:6rem 10rem}.slide.active{display:flex;flex-direction:column;justify-content:center;align-items:flex-start}.slide h1,.slide h2,.slide h3,.slide p{display:block;width:100%;margin:0 0 .35em 0}.slide h1{font-size:5.5rem;font-weight:900;line-height:.9}.slide h2{font-size:2.5rem;color:#1d70b8}.slide h3{font-size:1.6rem}.slide p{font-size:1.4rem;max-width:50rem;line-height:1.5}.logo{position:absolute;top:24px;left:24px;display:flex;gap:12px}.logo svg{width:42px}.bar{position:fixed;bottom:0;left:0;height:5px;background:#1d70b8}</style></head><body><div id='host'></div><div id='bar' class='bar'></div><script>const crest=`<svg viewBox='0 0 48 68'><path fill='currentColor' d='M24 1 L40 8 L46 28 L38 49 L24 67 L10 49 L2 28 L8 8 Z'/></svg>`;fetch('slides.md').then(r=>r.text()).then(md=>{const blocks=md.split(/^===slide===$/gm).map(s=>s.trim()).filter(Boolean);const host=document.getElementById('host');blocks.forEach(b=>{const s=document.createElement('section');s.className='slide';s.innerHTML=`<div class='logo'>${crest}<div>Department for Science,<br>Innovation & Technology</div></div>`+marked.parse(b);host.appendChild(s)});const els=[...document.querySelectorAll('.slide')];let c=0;window.show=i=>{c=Math.max(0,Math.min(i,els.length-1));els.forEach((e,n)=>e.classList.toggle('active',n===c));bar.style.width=((c+1)/els.length*100)+'%'};document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')show(c+1);if(e.key==='ArrowLeft')show(c-1)});show(0);});</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GovDeck</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Helvetica, Arial, sans-serif;
+      background: #fff;
+      color: #0b0c0c;
+    }
+
+    .slide {
+      display: none;
+      position: absolute;
+      inset: 0;
+      padding: 6rem 10rem;
+    }
+
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .slide h1,
+    .slide h2,
+    .slide h3,
+    .slide p {
+      display: block;
+      width: 100%;
+      margin: 0;
+    }
+
+    .slide h1 {
+      font-size: 5.5rem;
+      font-weight: 900;
+      line-height: 0.9;
+      margin-bottom: 1.5rem;
+    }
+
+    .slide h2 {
+      font-size: 2.5rem;
+      color: #1d70b8;
+      margin-bottom: 0.5rem;
+    }
+
+    .slide h3 {
+      font-size: 1.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .slide p {
+      height: 7rem;
+      min-height: 7rem;
+      max-height: 7rem;
+      overflow: hidden;
+      line-height: 1.5;
+      max-width: 50rem;
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="host"></div>
+
+  <script>
+    fetch('content/slides.md')
+      .then(r => r.text())
+      .then(md => {
+        const blocks = md
+          .split(/^===slide===$/gm)
+          .map(x => x.trim())
+          .filter(Boolean);
+
+        const host = document.getElementById('host');
+
+        blocks.forEach(block => {
+          const slide = document.createElement('section');
+          slide.className = 'slide';
+          slide.innerHTML = marked.parse(block);
+          host.appendChild(slide);
+        });
+
+        const slides = [...document.querySelectorAll('.slide')];
+        let current = 0;
+
+        function show(index) {
+          current = Math.max(0, Math.min(index, slides.length - 1));
+          slides.forEach((s, i) => s.classList.toggle('active', i === current));
+        }
+
+        document.addEventListener('keydown', e => {
+          if (e.key === 'ArrowRight' || e.key === ' ') show(current + 1);
+          if (e.key === 'ArrowLeft') show(current - 1);
+        });
+
+        show(0);
+      });
+  </script>
+</body>
+</html>
