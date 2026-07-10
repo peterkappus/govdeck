@@ -1,138 +1,54 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GovDeck</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <style>
-    body {
-      margin: 0;
-      font-family: Helvetica, Arial, sans-serif;
-      background: #fff;
-      color: #0b0c0c;
-    }
-
-    .slide {
-      display: none;
-      position: absolute;
-      inset: 0;
-      padding: 6rem 10rem;
-    }
-
-    .slide.active {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
-    }
-
-    .dsit-brand {
-      position: absolute;
-      top: 24px;
-      left: 24px;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .dsit-brand svg {
-      width: 42px;
-      height: auto;
-      flex-shrink: 0;
-    }
-
-    .dsit-brand__text {
-      font-size: 18px;
-      line-height: 1.05;
-      font-weight: 500;
-    }
-
-    .slide h1,
-    .slide h2,
-    .slide h3,
-    .slide p {
-      display: block;
-      width: 100%;
-      margin: 0;
-    }
-
-    .slide h1 {
-      font-size: 5.5rem;
-      font-weight: 900;
-      line-height: 0.9;
-      margin-bottom: 1.5rem;
-    }
-
-    .slide h2 {
-      font-size: 2.5rem;
-      color: #1d70b8;
-      margin-bottom: 0.5rem;
-    }
-
-    .slide h3 {
-      font-size: 1.6rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .slide p {
-      height: 7rem;
-      min-height: 7rem;
-      max-height: 7rem;
-      overflow: hidden;
-      line-height: 1.5;
-      max-width: 50rem;
-      font-size: 1.5rem;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GovDeck</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+body{margin:0;font-family:Helvetica,Arial,sans-serif;background:#fff;color:#0b0c0c}
+.slide{display:none;position:absolute;inset:0}.slide.active{display:block}
+</style>
 </head>
 <body>
-  <div id="host"></div>
-
-  <script>
-    const dsitBrand = `
-      <div class="dsit-brand">
-        <svg viewBox="0 0 48 68" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path fill="currentColor" d="M24 1 L40 8 L46 28 L38 49 L24 67 L10 49 L2 28 L8 8 Z"/>
-        </svg>
-        <div class="dsit-brand__text">
-          Department for Science,<br>
-          Innovation &amp; Technology
-        </div>
-      </div>`;
-
-    fetch('content/slides.md')
-      .then(r => r.text())
-      .then(md => {
-        const blocks = md
-          .split(/^===slide===$/gm)
-          .map(x => x.trim())
-          .filter(Boolean);
-
-        const host = document.getElementById('host');
-
-        blocks.forEach(block => {
-          const slide = document.createElement('section');
-          slide.className = 'slide';
-          slide.innerHTML = dsitBrand + marked.parse(block);
-          host.appendChild(slide);
-        });
-
-        const slides = [...document.querySelectorAll('.slide')];
-        let current = 0;
-
-        function show(index) {
-          current = Math.max(0, Math.min(index, slides.length - 1));
-          slides.forEach((s, i) => s.classList.toggle('active', i === current));
-        }
-
-        document.addEventListener('keydown', e => {
-          if (e.key === 'ArrowRight' || e.key === ' ') show(current + 1);
-          if (e.key === 'ArrowLeft') show(current - 1);
-        });
-
-        show(0);
-      });
-  </script>
-</body>
-</html>
+<div id="host"></div>
+<script>
+async function loadText(path){return fetch(path).then(r=>r.text())}
+async function loadLayout(name){
+ const src=await loadText(`layouts/${name}.slide`);
+ const template=(src.match(/<template>([\s\S]*?)<\/template>/)||[])[1]||'';
+ const style=(src.match(/<style>([\s\S]*?)<\/style>/)||[])[1]||'';
+ return {template,style};
+}
+function parseSlides(md){
+ return md.split(/^===slide===$/gm).map(s=>s.trim()).filter(Boolean).map(block=>{
+ const lines=block.split('\n'); const meta={}; const body=[];
+ let inMeta=true;
+ for(const line of lines){
+  const m=line.match(/^([a-zA-Z0-9_-]+):\s*(.*)$/);
+  if(inMeta && m){meta[m[1]]=m[2];}
+  else {inMeta=false; body.push(line)}
+ }
+ meta.content=marked.parse(body.join('\n').trim());
+ return meta;
+ });
+}
+(async()=>{
+ const md=await loadText('content/slides.md');
+ const slides=parseSlides(md); const host=document.getElementById('host');
+ for(const slide of slides){
+  const layout=await loadLayout(slide.layout||'agenda-item');
+  let html=layout.template;
+  Object.entries(slide).forEach(([k,v])=> html=html.replaceAll('{{'+k+'}}',v));
+  const section=document.createElement('section');
+  section.className='slide';
+  section.innerHTML=html;
+  host.appendChild(section);
+  if(!document.getElementById('style-'+(slide.layout||'agenda-item'))){const st=document.createElement('style');st.id='style-'+(slide.layout||'agenda-item');st.textContent=layout.style;document.head.appendChild(st);} }
+ const els=[...document.querySelectorAll('.slide')]; let cur=0;
+ function show(i){cur=Math.max(0,Math.min(i,els.length-1));els.forEach((e,n)=>e.classList.toggle('active',n===cur));}
+ document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')show(cur+1);if(e.key==='ArrowLeft')show(cur-1)});
+ show(0);
+})();
+</script>
+</body></html>

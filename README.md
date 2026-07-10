@@ -2,96 +2,56 @@
 
 GovDeck is a lightweight, Git-friendly presentation system.
 
-## Design principles
+## Architecture
 
-- Markdown-first content
-- Simple HTML rendering engine
-- Human-readable source files
-- Fast iteration with AI tools
-- Local-first workflow
-- Presentation-focused typography
-- Clear separation between content and rendering
+- `content/` contains slide content
+- `layouts/` contains Vue-style single file slide components
+- `index.html` is the runtime renderer
 
-## Project structure
+## Structure
 
 ```text
 .
 ├── index.html
 ├── content/
 │   └── slides.md
+├── layouts/
+│   └── agenda-item.slide
 ├── watch.sh
 ├── serve.sh
 └── README.md
 ```
 
-## Content workflow
+## Layout format
 
-Presentation content lives in:
+```html
+<template>
+  <h1>{{title}}</h1>
+  <div>{{content}}</div>
+</template>
 
-```text
-content/slides.md
+<style>
+h1 { font-size: 5rem; }
+</style>
 ```
 
-The rendering engine lives in:
-
-```text
-index.html
-```
-
-This allows presentation content to evolve independently from the renderer.
-
-## Sample slide format
+## Slide format
 
 ```markdown
 ===slide===
-# Introduction
-## Welcome Session
-### 09:00 - 09:15
-Overview of the day and key objectives.
+layout: agenda-item
+title: Introduction
+speaker: Welcome Session
+time: 09:00 - 09:15
 
-===slide===
-# Demonstration
-## Practical Example
-### 09:15 - 09:45
-Show how content and rendering are separated.
+Overview of the day.
 ```
 
-## Local development
-
-Start a web server:
+## Development
 
 ```bash
 ./serve.sh
-```
-
-Open:
-
-```text
-http://localhost:8000
-```
-
-## Auto deployment
-
-Run:
-
-```bash
 ./watch.sh
 ```
 
-The watcher:
-
-- Watches for new `index*.zip` files in Downloads
-- Updates project files
-- Preserves `.git`
-- Preserves local `content/`
-- Preserves local assets and working files
-
-## Git
-
-Recommended:
-
-```gitignore
-content/
-```
-
-This allows local presentation content to remain separate from renderer updates.
+The watcher preserves `.git` and local `content/`.
