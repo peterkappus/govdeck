@@ -1,7 +1,10 @@
 <template>
+
 <div class="dsit-brand">
-  <div class="crest">◈</div>
-  <div>Department for Science,<br>Innovation &amp; Technology</div>
+<div class="gem-c-organisation-logo brand--department-for-science-innovation-technology">
+    <div class="crest gem-c-organisation-logo__container gem-c-organisation-logo__crest gem-c-organisation-logo__crest--single-identity brand__border-color">
+      <span class="gem-c-organisation-logo__name">Department for<br>Science, Innovation<br>&amp; Technology</span>
+    </div>
 </div>
 <div class="wrap">
   <h1>{{title}}</h1>
@@ -11,5 +14,64 @@
 </div>
 </template>
 <style>
-.dsit-brand{position:absolute;top:24px;left:24px;display:flex;gap:12px}.wrap{padding:6rem 10rem;height:100vh;display:flex;flex-direction:column;justify-content:center}h1{font-size:5.5rem;font-weight:900;line-height:.9;margin:0 0 1rem}h2{font-size:2.5rem;color:#1d70b8;margin:0 0 .5rem}h3{font-size:1.6rem;margin:0 0 1.5rem}.body{height:7rem;overflow:hidden;max-width:50rem;font-size:1.5rem}
+/* DSIT branding/logo area */
+.dsit-brand {
+    position: absolute;
+    font-size: 1.2rem;
+    top: 24px;
+    left: 24px;
+
+    display: flex;
+    gap: 12px;
+}
+
+/* Main slide/page wrapper */
+.wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    height: 100vh;
+    padding: 0rem 8rem;
+}
+
+/* Primary heading */
+h1 {
+    margin: 0 0 1rem;
+
+    font-size: 5.5rem;
+    font-weight: 900;
+    line-height: 0.9;
+}
+
+/* Secondary heading */
+h2 {
+    margin: 0 0 0.5rem;
+
+    color: #1d70b8;
+    font-size: 2.5rem;
+}
+
+/* Tertiary heading */
+h3 {
+    margin: 0 0 1.5rem;
+
+    font-size: 1.6rem;
+}
+
+/* Body/description area
+   Fixed height prevents slide content shifting
+   when paragraphs wrap onto multiple lines.
+*/
+
+.crest {
+background: url(/org_crest_18px.png) no-repeat 8px 0;
+    background-size: auto 32px;
+    display: block;
+    padding-top: 35px;
+    border-left: 2px solid #00f8f8;
+    padding-left: 8px;
+
+}
+
 </style>
